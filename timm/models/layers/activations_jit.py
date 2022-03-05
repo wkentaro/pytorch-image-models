@@ -15,14 +15,14 @@ from torch import nn as nn
 from torch.nn import functional as F
 
 
-@torch.jit.script
+@torch.jit._script_if_tracing
 def swish_jit(x, inplace: bool = False):
     """Swish - Described in: https://arxiv.org/abs/1710.05941
     """
     return x.mul(x.sigmoid())
 
 
-@torch.jit.script
+@torch.jit._script_if_tracing
 def mish_jit(x, _inplace: bool = False):
     """Mish: A Self Regularized Non-Monotonic Neural Activation Function - https://arxiv.org/abs/1908.08681
     """
@@ -45,7 +45,7 @@ class MishJit(nn.Module):
         return mish_jit(x)
 
 
-@torch.jit.script
+@torch.jit._script_if_tracing
 def hard_sigmoid_jit(x, inplace: bool = False):
     # return F.relu6(x + 3.) / 6.
     return (x + 3).clamp(min=0, max=6).div(6.)  # clamp seems ever so slightly faster?
@@ -59,7 +59,7 @@ class HardSigmoidJit(nn.Module):
         return hard_sigmoid_jit(x)
 
 
-@torch.jit.script
+@torch.jit._script_if_tracing
 def hard_swish_jit(x, inplace: bool = False):
     # return x * (F.relu6(x + 3.) / 6)
     return x * (x + 3).clamp(min=0, max=6).div(6.)  # clamp seems ever so slightly faster?
@@ -73,7 +73,7 @@ class HardSwishJit(nn.Module):
         return hard_swish_jit(x)
 
 
-@torch.jit.script
+@torch.jit._script_if_tracing
 def hard_mish_jit(x, inplace: bool = False):
     """ Hard Mish
     Experimental, based on notes by Mish author Diganta Misra at
